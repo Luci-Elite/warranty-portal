@@ -260,6 +260,12 @@
             <div class="value" id="lastUpdated">&mdash;</div>
           </div>
         </div>
+        <div class="row" id="scheduledRow" style="display:none;">
+          <div>
+            <div class="label">Scheduled service date</div>
+            <div class="value" id="scheduledDate">&mdash;</div>
+          </div>
+        </div>
         <div class="row">
           <div>
             <div class="label">Handover date</div>
@@ -306,15 +312,19 @@
    TAB 1  Check Status  reads from a Google Sheet you maintain.
    -------------------------------------------------------------------------
    1. Make a Google Sheet with these exact column headers in row 1:
-        SerialNumber | CustomerName | Status | HandoverDate | LastUpdated | EstimatedCompletion | Notes
+        SerialNumber | CustomerName | Status | ScheduledDate | HandoverDate | LastUpdated | EstimatedCompletion | Notes
       Example rows:
-        SN12345 | Aditi Rao | In Repair | 2026-09-01 | 2026-09-03 | 2026-09-10 | Awaiting replacement screen
-        SN99000 | Meera Nair | Received | 2026-09-05 | 2026-09-05 | | 
+        SN12345 | Aditi Rao | In Repair | | 2026-09-01 | 2026-09-03 | 2026-09-10 | Awaiting replacement screen
+        SN88110 | Priya Menon | Scheduled | 2026-09-12 | | 2026-09-06 | | Please bring your charger too
+        SN99000 | Meera Nair | Received | | 2026-09-05 | 2026-09-05 | | 
 
       "Status" must be one of exactly these values (case-sensitive):
-        Received, Diagnosis, Parts Ordered, In Repair, Ready for Pickup, Completed, On Hold
+        Scheduled, Received, Diagnosis, Parts Ordered, In Repair, Ready for Pickup, Completed, On Hold
 
-      HandoverDate, EstimatedCompletion and Notes can be left blank per row.
+      ScheduledDate, HandoverDate, EstimatedCompletion and Notes can be left blank per row.
+      Use ScheduledDate for the date you've booked a customer in for (from the "Book a
+      Service" form) before their laptop has arrived. Once it's dropped off, switch
+      Status to "Received" and fill in HandoverDate instead.
 
    2. File > Share > Publish to web > choose the sheet tab > format = CSV > Publish.
       Copy that link into SHEET_CSV_URL below.
@@ -346,13 +356,14 @@ const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRcElB9lq
 
 // Fallback demo data so the page works before you connect a real sheet.
 const DEMO_DATA = [
-  {SerialNumber:"SN12345", CustomerName:"Aditi Rao", Status:"In Repair", HandoverDate:"2026-09-01", LastUpdated:"2026-09-03", EstimatedCompletion:"2026-09-10", Notes:"Awaiting replacement screen from vendor"},
-  {SerialNumber:"TCK-0042", CustomerName:"Vikram Shah", Status:"Ready for Pickup", HandoverDate:"2026-08-28", LastUpdated:"2026-09-04", EstimatedCompletion:"", Notes:"Please bring your original receipt"},
-  {SerialNumber:"SN99000", CustomerName:"Meera Nair", Status:"Received", HandoverDate:"2026-09-05", LastUpdated:"2026-09-05", EstimatedCompletion:"", Notes:""},
-  {SerialNumber:"SN77002", CustomerName:"Rohan Das", Status:"On Hold", HandoverDate:"2026-09-02", LastUpdated:"2026-09-04", EstimatedCompletion:"", Notes:"Warranty claim needs proof of purchase  please email a copy of your invoice"}
+  {SerialNumber:"SN12345", CustomerName:"Aditi Rao", Status:"In Repair", ScheduledDate:"", HandoverDate:"2026-09-01", LastUpdated:"2026-09-03", EstimatedCompletion:"2026-09-10", Notes:"Awaiting replacement screen from vendor"},
+  {SerialNumber:"TCK-0042", CustomerName:"Vikram Shah", Status:"Ready for Pickup", ScheduledDate:"", HandoverDate:"2026-08-28", LastUpdated:"2026-09-04", EstimatedCompletion:"", Notes:"Please bring your original receipt"},
+  {SerialNumber:"SN99000", CustomerName:"Meera Nair", Status:"Received", ScheduledDate:"", HandoverDate:"2026-09-05", LastUpdated:"2026-09-05", EstimatedCompletion:"", Notes:""},
+  {SerialNumber:"SN77002", CustomerName:"Rohan Das", Status:"On Hold", ScheduledDate:"", HandoverDate:"2026-09-02", LastUpdated:"2026-09-04", EstimatedCompletion:"", Notes:"Warranty claim needs proof of purchase \u2014 please email a copy of your invoice"},
+  {SerialNumber:"SN88110", CustomerName:"Priya Menon", Status:"Scheduled", ScheduledDate:"2026-09-12", HandoverDate:"", LastUpdated:"2026-09-06", EstimatedCompletion:"", Notes:"Please bring your charger too"}
 ];
 
-const STAGES = ["Received","Diagnosis","Parts Ordered","In Repair","Ready for Pickup","Completed"];
+const STAGES = ["Scheduled","Received","Diagnosis","Parts Ordered","In Repair","Ready for Pickup","Completed"];
 
 function parseCSV(text){
   const lines = text.trim().split(/\r?\n/);
@@ -440,6 +451,14 @@ async function checkStatus(){
     document.getElementById("customerName").textContent = match.CustomerName || "\u2014";
     document.getElementById("lastUpdated").textContent = match.LastUpdated || "\u2014";
     document.getElementById("handoverDate").textContent = match.HandoverDate || "\u2014";
+
+    const scheduledRow = document.getElementById("scheduledRow");
+    if (match.ScheduledDate && match.ScheduledDate.trim()){
+      document.getElementById("scheduledDate").textContent = match.ScheduledDate;
+      scheduledRow.style.display = "block";
+    } else {
+      scheduledRow.style.display = "none";
+    }
 
     const pill = document.getElementById("statusPill");
     pill.textContent = match.Status || "Unknown";
