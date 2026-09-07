@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Warranty Status Check</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#14171C;
+    --surface:#1D2129;
+    --surface-raised:#242933;
+    --border:#2C323D;
+    --text:#E8EAED;
+    --muted:#7C8591;
+    --accent:#4FB6A8;
+    --accent-dim:#2E4A47;
+    --warn:#E0A458;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans', system-ui, sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:48px 20px 80px;
+  }
+  .wrap{width:100%; max-width:520px;}
+  header{margin-bottom:32px; text-align:left;}
+  header h1{
+    font-size:1.5rem;
+    font-weight:600;
+    margin:0 0 6px;
+    letter-spacing:-0.01em;
+  }
+  header p{
+    color:var(--muted);
+    margin:0;
+    font-size:0.95rem;
+    line-height:1.5;
+  }
+  .search-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:24px;
+  }
+  label{
+    display:block;
+    font-size:0.85rem;
+    color:var(--muted);
+    margin-bottom:8px;
+  }
+  .input-row{display:flex; gap:10px;}
+  input[type="text"]{
+    flex:1;
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:12px 14px;
+    color:var(--text);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.95rem;
+    letter-spacing:0.02em;
+    outline:none;
+  }
+  input[type="text"]:focus{border-color:var(--accent);}
+  input[type="text"]::placeholder{color:#4B525E; letter-spacing:normal; font-family:'IBM Plex Sans', sans-serif;}
+  button{
+    background:var(--accent);
+    color:#0C1210;
+    border:none;
+    border-radius:8px;
+    padding:0 20px;
+    font-weight:600;
+    font-size:0.95rem;
+    cursor:pointer;
+  }
+  button:hover{opacity:0.9;}
+  button:disabled{opacity:0.5; cursor:default;}
+  .hint{
+    margin-top:10px;
+    font-size:0.8rem;
+    color:var(--muted);
+  }
+  .result{
+    margin-top:24px;
+    display:none;
+  }
+  .result.visible{display:block;}
+  .summary{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:20px 22px;
+    margin-bottom:20px;
+  }
+  .summary .label{color:var(--muted); font-size:0.8rem; margin-bottom:4px;}
+  .summary .value{font-size:1.05rem; font-weight:500;}
+  .summary .row{display:flex; justify-content:space-between; margin-top:14px; padding-top:14px; border-top:1px solid var(--border);}
+  .status-pill{
+    display:inline-block;
+    padding:4px 12px;
+    border-radius:20px;
+    background:var(--accent-dim);
+    color:var(--accent);
+    font-size:0.85rem;
+    font-weight:600;
+  }
+  .status-pill.warn{background:#3A311F; color:var(--warn);}
+  .note-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-left:3px solid var(--warn);
+    border-radius:var(--radius);
+    padding:16px 18px;
+    margin-bottom:20px;
+    font-size:0.9rem;
+  }
+  .note-card .value{color:var(--text); line-height:1.5;}
+  .timeline{list-style:none; margin:0; padding:0;}
+  .timeline li{
+    position:relative;
+    padding:0 0 26px 28px;
+    border-left:2px solid var(--border);
+    margin-left:6px;
+  }
+  .timeline li:last-child{border-color:transparent; padding-bottom:0;}
+  .timeline li::before{
+    content:'';
+    position:absolute;
+    left:-7px;
+    top:2px;
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    background:var(--border);
+    border:2px solid var(--bg);
+  }
+  .timeline li.done::before{background:var(--accent);}
+  .timeline li.current::before{background:var(--accent); box-shadow:0 0 0 4px var(--accent-dim);}
+  .timeline .step-title{font-weight:500; font-size:0.95rem;}
+  .timeline li:not(.done):not(.current) .step-title{color:var(--muted);}
+  .timeline .step-note{font-size:0.85rem; color:var(--muted); margin-top:3px;}
+  .error, .loading{
+    margin-top:20px;
+    padding:14px 16px;
+    border-radius:8px;
+    font-size:0.9rem;
+  }
+  .error{background:#3A2323; color:#E88A8A; border:1px solid #4A2C2C;}
+  .loading{color:var(--muted);}
+  footer{margin-top:40px; font-size:0.78rem; color:#4B525E; text-align:center;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Laptop warranty status</h1>
+    <p>Enter the serial number or ticket ID from your repair receipt to check where things stand.</p>
+  </header>
+
+  <div class="search-card">
+    <label for="lookup">Serial number or ticket ID</label>
+    <div class="input-row">
+      <input type="text" id="lookup" placeholder="e.g. SN12345 or TCK-0042" autocomplete="off">
+      <button id="checkBtn">Check</button>
+    </div>
+    <div class="hint">Case-insensitive. This matches the ID printed on your service receipt.</div>
+  </div>
+
+  <div id="loading" class="loading" style="display:none;">Looking up your record…</div>
+  <div id="error" class="error" style="display:none;"></div>
+
+  <div class="result" id="result">
+    <div class="summary">
+      <div class="label">Status</div>
+      <div class="value"><span id="statusPill" class="status-pill">—</span></div>
+      <div class="row">
+        <div>
+          <div class="label">Customer</div>
+          <div class="value" id="customerName">—</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="label">Last updated</div>
+          <div class="value" id="lastUpdated">—</div>
+        </div>
+      </div>
+      <div class="row" id="etaRow" style="display:none;">
+        <div>
+          <div class="label">Estimated completion</div>
+          <div class="value" id="etaValue">—</div>
+        </div>
+      </div>
+    </div>
+    <div class="note-card" id="noteCard" style="display:none;">
+      <div class="label">Note from our service team</div>
+      <div class="value" id="noteValue" style="margin-top:6px; font-weight:400;"></div>
+    </div>
+    <ul class="timeline" id="timeline"></ul>
+  </div>
+
+  <footer>Updates are posted manually by our service team. If your status looks stale, contact us directly.</footer>
+</div>
+
+<script>
+/* =========================================================================
+   SETUP — read this before publishing
+   =========================================================================
+   1. Make a Google Sheet with these exact column headers in row 1:
+        ID | CustomerName | Status | LastUpdated | EstimatedCompletion | Notes
+      Example rows:
+        SN12345 | Aditi Rao | In Repair | 2026-09-03 | 2026-09-10 | Awaiting replacement screen
+        TCK-0042 | Vikram Shah | Ready for Pickup | 2026-09-04 | | Bring your original receipt
+        SN77002 | Rohan Das | On Hold | 2026-09-04 | | Warranty claim needs proof of purchase
+
+      "Status" must be one of exactly these values (case-sensitive):
+        Received, Diagnosis, Parts Ordered, In Repair, Ready for Pickup, Completed, On Hold
+
+      EstimatedCompletion and Notes are both optional per row — leave the cell blank
+      if there's nothing to say. Notes is shown to the customer as-is, so write it in
+      plain customer-facing language (this is also where you'd explain a hold reason).
+
+   2. In Google Sheets: File > Share > Publish to web.
+      Choose the specific sheet, format = Comma-separated values (.csv), click Publish.
+      Copy the URL it gives you and paste it below as SHEET_CSV_URL.
+
+   3. Whenever you need to update a customer, just edit their row in the Sheet.
+      Changes usually appear on the page within a minute or two — no redeploy needed.
+
+   4. Host this HTML file for free on GitHub Pages, Netlify, or Vercel, then share
+      that link with customers (e.g. https://yourcompany.github.io/warranty).
+   ========================================================================= */
+
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRcElB9lq25oarwBjdoh4_x8OnKvUZZKibCspAKZgZnKSdEwf37C9n8s4xU4E0NM750wsKTUPM0UrkH/pub?gid=0&single=true&output=csv";
+
+// Fallback demo data so the page works before you connect a real sheet.
+const DEMO_DATA = [
+  {ID:"SN12345", CustomerName:"Aditi Rao", Status:"In Repair", LastUpdated:"2026-09-03", EstimatedCompletion:"2026-09-10", Notes:"Awaiting replacement screen from vendor"},
+  {ID:"TCK-0042", CustomerName:"Vikram Shah", Status:"Ready for Pickup", LastUpdated:"2026-09-04", EstimatedCompletion:"", Notes:"Please bring your original receipt"},
+  {ID:"SN99000", CustomerName:"Meera Nair", Status:"Received", LastUpdated:"2026-09-05", EstimatedCompletion:"", Notes:""},
+  {ID:"SN77002", CustomerName:"Rohan Das", Status:"On Hold", LastUpdated:"2026-09-04", EstimatedCompletion:"", Notes:"Warranty claim needs proof of purchase — please email a copy of your invoice"}
+];
+
+const STAGES = ["Received","Diagnosis","Parts Ordered","In Repair","Ready for Pickup","Completed"];
+
+function parseCSV(text){
+  const lines = text.trim().split(/\r?\n/);
+  const headers = lines[0].split(",").map(h => h.trim());
+  return lines.slice(1).filter(l => l.trim().length).map(line => {
+    const cells = line.split(",").map(c => c.trim());
+    const row = {};
+    headers.forEach((h, i) => row[h] = cells[i] || "");
+    return row;
+  });
+}
+
+async function fetchData(){
+  if (!SHEET_CSV_URL || SHEET_CSV_URL.startsWith("PASTE_")){
+    return DEMO_DATA;
+  }
+  const res = await fetch(SHEET_CSV_URL);
+  if (!res.ok) throw new Error("Could not reach the data source.");
+  const text = await res.text();
+  return parseCSV(text);
+}
+
+function renderTimeline(status){
+  const timeline = document.getElementById("timeline");
+  timeline.innerHTML = "";
+
+  if (status === "On Hold"){
+    const li = document.createElement("li");
+    li.className = "current";
+    li.innerHTML = `<div class="step-title">On hold</div><div class="step-note">We've paused work on your device — see notes above, or contact us for details.</div>`;
+    timeline.appendChild(li);
+    return;
+  }
+
+  const currentIndex = STAGES.indexOf(status);
+  STAGES.forEach((stage, i) => {
+    const li = document.createElement("li");
+    if (i < currentIndex) li.className = "done";
+    else if (i === currentIndex) li.className = "current";
+    li.innerHTML = `<div class="step-title">${stage}</div>`;
+    timeline.appendChild(li);
+  });
+}
+
+async function checkStatus(){
+  const idInput = document.getElementById("lookup").value.trim().toLowerCase();
+  const errorBox = document.getElementById("error");
+  const loading = document.getElementById("loading");
+  const result = document.getElementById("result");
+  const btn = document.getElementById("checkBtn");
+
+  errorBox.style.display = "none";
+  result.classList.remove("visible");
+
+  if (!idInput){
+    errorBox.textContent = "Enter a serial number or ticket ID first.";
+    errorBox.style.display = "block";
+    return;
+  }
+
+  btn.disabled = true;
+  loading.style.display = "block";
+
+  try{
+    const data = await fetchData();
+    const match = data.find(row => (row.ID || "").toLowerCase() === idInput);
+
+    if (!match){
+      errorBox.textContent = "We couldn't find a record with that ID. Double-check it against your receipt.";
+      errorBox.style.display = "block";
+      return;
+    }
+
+    document.getElementById("customerName").textContent = match.CustomerName || "—";
+    document.getElementById("lastUpdated").textContent = match.LastUpdated || "—";
+    const pill = document.getElementById("statusPill");
+    pill.textContent = match.Status || "Unknown";
+    pill.className = "status-pill" + (match.Status === "On Hold" ? " warn" : "");
+
+    const etaRow = document.getElementById("etaRow");
+    if (match.EstimatedCompletion && match.EstimatedCompletion.trim()){
+      document.getElementById("etaValue").textContent = match.EstimatedCompletion;
+      etaRow.style.display = "block";
+    } else {
+      etaRow.style.display = "none";
+    }
+
+    const noteCard = document.getElementById("noteCard");
+    if (match.Notes && match.Notes.trim()){
+      document.getElementById("noteValue").textContent = match.Notes;
+      noteCard.style.display = "block";
+    } else {
+      noteCard.style.display = "none";
+    }
+
+    renderTimeline(match.Status);
+    result.classList.add("visible");
+  } catch(err){
+    errorBox.textContent = "Something went wrong reaching the status data. Please try again shortly.";
+    errorBox.style.display = "block";
+  } finally {
+    btn.disabled = false;
+    loading.style.display = "none";
+  }
+}
+
+document.getElementById("checkBtn").addEventListener("click", checkStatus);
+document.getElementById("lookup").addEventListener("keydown", e => { if (e.key === "Enter") checkStatus(); });
+</script>
+</body>
+</html>
