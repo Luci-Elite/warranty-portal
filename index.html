@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Warranty Status Check</title>
+<title>LaptopCare Portal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#14171C;
     --surface:#1D2129;
-    --surface-raised:#242933;
     --border:#2C323D;
     --text:#E8EAED;
     --muted:#7C8591;
@@ -35,20 +34,9 @@
   .logo-row{display:flex; justify-content:center; margin-bottom:28px;}
   .logo-row img{height:34px; width:auto;}
   header{margin-bottom:28px; text-align:left;}
-  header h1{
-    font-size:1.5rem;
-    font-weight:600;
-    margin:0 0 6px;
-    letter-spacing:-0.01em;
-  }
-  header p{
-    color:var(--muted);
-    margin:0;
-    font-size:0.95rem;
-    line-height:1.5;
-  }
+  header h1{font-size:1.5rem; font-weight:600; margin:0 0 6px; letter-spacing:-0.01em;}
+  header p{color:var(--muted); margin:0; font-size:0.95rem; line-height:1.5;}
 
-  /* Tabs */
   .tabs{
     display:flex;
     gap:4px;
@@ -64,9 +52,9 @@
     border:none;
     color:var(--muted);
     font-family:'IBM Plex Sans', sans-serif;
-    font-size:0.9rem;
+    font-size:0.82rem;
     font-weight:500;
-    padding:10px 12px;
+    padding:10px 6px;
     border-radius:8px;
     cursor:pointer;
   }
@@ -80,12 +68,7 @@
     border-radius:var(--radius);
     padding:24px;
   }
-  label{
-    display:block;
-    font-size:0.85rem;
-    color:var(--muted);
-    margin-bottom:8px;
-  }
+  label{display:block; font-size:0.85rem; color:var(--muted); margin-bottom:8px;}
   .input-row{display:flex; gap:10px;}
   input[type="text"]{
     flex:1;
@@ -113,15 +96,9 @@
   }
   button:hover{opacity:0.9;}
   button:disabled{opacity:0.5; cursor:default;}
-  .hint{
-    margin-top:10px;
-    font-size:0.8rem;
-    color:var(--muted);
-  }
-  .result{
-    margin-top:24px;
-    display:none;
-  }
+  .hint{margin-top:10px; font-size:0.8rem; color:var(--muted);}
+
+  .result{margin-top:24px; display:none;}
   .result.visible{display:block;}
   .summary{
     background:var(--surface);
@@ -154,7 +131,6 @@
   }
   .note-card .value{color:var(--text); line-height:1.5;}
 
-  /* Progress bar */
   .progress-wrap{
     background:var(--surface);
     border:1px solid var(--border);
@@ -162,57 +138,22 @@
     padding:22px 20px 18px;
     margin-bottom:20px;
   }
-  .progress-bar{
-    display:flex;
-    gap:4px;
-    height:8px;
-  }
-  .progress-bar .seg{
-    flex:1;
-    background:var(--border);
-    border-radius:4px;
-  }
+  .progress-bar{display:flex; gap:4px; height:8px;}
+  .progress-bar .seg{flex:1; background:var(--border); border-radius:4px;}
   .progress-bar .seg.filled{background:var(--accent);}
-  .progress-labels{
-    display:flex;
-    margin-top:10px;
-  }
-  .progress-labels span{
-    flex:1;
-    font-size:0.68rem;
-    color:var(--muted);
-    text-align:center;
-    line-height:1.3;
-    padding:0 2px;
-  }
+  .progress-labels{display:flex; margin-top:10px;}
+  .progress-labels span{flex:1; font-size:0.68rem; color:var(--muted); text-align:center; line-height:1.3; padding:0 2px;}
   .progress-labels span.current{color:var(--accent); font-weight:600;}
   .progress-labels span.done{color:var(--text);}
 
-  .error, .loading{
-    margin-top:20px;
-    padding:14px 16px;
-    border-radius:8px;
-    font-size:0.9rem;
-  }
+  .error, .loading{margin-top:20px; padding:14px 16px; border-radius:8px; font-size:0.9rem;}
   .error{background:#3A2323; color:#E88A8A; border:1px solid #4A2C2C;}
   .loading{color:var(--muted);}
   footer{margin-top:40px; font-size:0.78rem; color:#4B525E; text-align:center;}
 
-  /* Reservation tab */
-  .reserve-card{
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    padding:20px;
-  }
+  .reserve-card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px;}
   .reserve-card p{color:var(--muted); font-size:0.9rem; line-height:1.5; margin:0 0 16px;}
-  .reserve-card iframe{
-    width:100%;
-    min-height:900px;
-    border:none;
-    border-radius:8px;
-    background:#fff;
-  }
+  .reserve-card iframe{width:100%; min-height:900px; border:none; border-radius:8px; background:#fff;}
 </style>
 </head>
 <body>
@@ -223,81 +164,133 @@
   </div>
 
   <div class="tabs">
-    <button class="tab-btn active" id="tabBtnStatus">Check Status</button>
-    <button class="tab-btn" id="tabBtnReserve">Book a Service</button>
+    <button class="tab-btn active" data-tab="tabWarranty">Warranty Status</button>
+    <button class="tab-btn" data-tab="tabService">Service Status</button>
+    <button class="tab-btn" data-tab="tabReserve">Book a Service</button>
   </div>
 
-  <!-- ===================== TAB 1: CHECK STATUS ===================== -->
-  <div class="tab-panel active" id="tabStatus">
+  <!-- ============================ TAB 1: WARRANTY STATUS ============================ -->
+  <div class="tab-panel active" id="tabWarranty">
     <header>
-      <h1>Laptop warranty status</h1>
-      <p>Enter the serial number from your service receipt to check where things stand.</p>
+      <h1>Warranty status</h1>
+      <p>Enter your laptop's serial number to check your warranty repair status.</p>
     </header>
 
     <div class="search-card">
-      <label for="lookup">Serial number</label>
+      <label for="warrantyLookup">Serial number</label>
       <div class="input-row">
-        <input type="text" id="lookup" placeholder="e.g. SN12345" autocomplete="off">
-        <button id="checkBtn">Check</button>
+        <input type="text" id="warrantyLookup" placeholder="e.g. SN12345" autocomplete="off">
+        <button id="warrantyCheckBtn">Check</button>
       </div>
       <div class="hint">Case-insensitive. This matches the serial number printed on your service receipt.</div>
     </div>
 
-    <div id="loading" class="loading" style="display:none;">Looking up your record&hellip;</div>
-    <div id="error" class="error" style="display:none;"></div>
+    <div id="warrantyLoading" class="loading" style="display:none;">Looking up your record&hellip;</div>
+    <div id="warrantyError" class="error" style="display:none;"></div>
 
-    <div class="result" id="result">
+    <div class="result" id="warrantyResult">
       <div class="summary">
         <div class="label">Status</div>
-        <div class="value"><span id="statusPill" class="status-pill">&mdash;</span></div>
+        <div class="value"><span id="warrantyStatusPill" class="status-pill">&mdash;</span></div>
         <div class="row">
           <div>
             <div class="label">Customer</div>
-            <div class="value" id="customerName">&mdash;</div>
+            <div class="value" id="warrantyCustomerName">&mdash;</div>
           </div>
           <div style="text-align:right;">
             <div class="label">Last updated</div>
-            <div class="value" id="lastUpdated">&mdash;</div>
-          </div>
-        </div>
-        <div class="row" id="scheduledRow" style="display:none;">
-          <div>
-            <div class="label">Scheduled service date</div>
-            <div class="value" id="scheduledDate">&mdash;</div>
+            <div class="value" id="warrantyLastUpdated">&mdash;</div>
           </div>
         </div>
         <div class="row">
           <div>
             <div class="label">Handover date</div>
-            <div class="value" id="handoverDate">&mdash;</div>
+            <div class="value" id="warrantyHandoverDate">&mdash;</div>
           </div>
-          <div style="text-align:right;" id="etaRow">
+          <div style="text-align:right;" id="warrantyEtaRow">
             <div class="label">Estimated completion</div>
-            <div class="value" id="etaValue">&mdash;</div>
+            <div class="value" id="warrantyEtaValue">&mdash;</div>
           </div>
         </div>
       </div>
 
-      <div class="progress-wrap" id="progressWrap">
-        <div class="progress-bar" id="progressBar"></div>
-        <div class="progress-labels" id="progressLabels"></div>
+      <div class="progress-wrap">
+        <div class="progress-bar" id="warrantyProgressBar"></div>
+        <div class="progress-labels" id="warrantyProgressLabels"></div>
       </div>
 
-      <div class="note-card" id="noteCard" style="display:none;">
+      <div class="note-card" id="warrantyNoteCard" style="display:none;">
         <div class="label">Note from our service team</div>
-        <div class="value" id="noteValue" style="margin-top:6px; font-weight:400;"></div>
+        <div class="value" id="warrantyNoteValue" style="margin-top:6px; font-weight:400;"></div>
       </div>
     </div>
   </div>
 
-  <!-- ===================== TAB 2: BOOK A SERVICE ===================== -->
+  <!-- ============================ TAB 2: SERVICE STATUS ============================ -->
+  <div class="tab-panel" id="tabService">
+    <header>
+      <h1>Service status</h1>
+      <p>Booked a service? Enter your serial number to see the date we've assigned and how the job is progressing.</p>
+    </header>
+
+    <div class="search-card">
+      <label for="serviceLookup">Serial number</label>
+      <div class="input-row">
+        <input type="text" id="serviceLookup" placeholder="e.g. SN12345" autocomplete="off">
+        <button id="serviceCheckBtn">Check</button>
+      </div>
+      <div class="hint">Use the same serial number you entered when booking.</div>
+    </div>
+
+    <div id="serviceLoading" class="loading" style="display:none;">Looking up your booking&hellip;</div>
+    <div id="serviceError" class="error" style="display:none;"></div>
+
+    <div class="result" id="serviceResult">
+      <div class="summary">
+        <div class="label">Status</div>
+        <div class="value"><span id="serviceStatusPill" class="status-pill">&mdash;</span></div>
+        <div class="row">
+          <div>
+            <div class="label">Customer</div>
+            <div class="value" id="serviceCustomerName">&mdash;</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="label">Last updated</div>
+            <div class="value" id="serviceLastUpdated">&mdash;</div>
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <div class="label">Scheduled date</div>
+            <div class="value" id="serviceScheduledDate">&mdash;</div>
+          </div>
+          <div style="text-align:right;" id="serviceEndRow">
+            <div class="label">Service end date</div>
+            <div class="value" id="serviceEndDate">&mdash;</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-bar" id="serviceProgressBar"></div>
+        <div class="progress-labels" id="serviceProgressLabels"></div>
+      </div>
+
+      <div class="note-card" id="serviceNoteCard" style="display:none;">
+        <div class="label">Note from our service team</div>
+        <div class="value" id="serviceNoteValue" style="margin-top:6px; font-weight:400;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================ TAB 3: BOOK A SERVICE ============================ -->
   <div class="tab-panel" id="tabReserve">
     <header>
       <h1>Book a service</h1>
-      <p>Fill in your laptop and purchase details below to register a warranty service request. Our team will review it and follow up.</p>
+      <p>Fill in your laptop and purchase details below. Our team will review your request and assign a service date, which you can then check under "Service Status" using your serial number.</p>
     </header>
     <div class="reserve-card">
-      <p>This form goes straight to our service team &mdash; you'll receive your serial number / ticket ID separately once we process your request.</p>
+      <p>This form goes straight to our service team.</p>
       <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSc0dkFJuO1XbjqNgPxrH2V2sJz7eERIlu6ytC2f92RQ88ytKw/viewform?embedded=true" title="Service reservation form">Loading form&hellip;</iframe>
     </div>
   </div>
@@ -309,61 +302,64 @@
 /* =========================================================================
    SETUP  read this before publishing
    =========================================================================
-   TAB 1  Check Status  reads from a Google Sheet you maintain.
+   This portal uses THREE separate data sources. They never mix:
+
    -------------------------------------------------------------------------
-   1. Make a Google Sheet with these exact column headers in row 1:
-        SerialNumber | CustomerName | Status | ScheduledDate | HandoverDate | LastUpdated | EstimatedCompletion | Notes
-      Example rows:
-        SN12345 | Aditi Rao | In Repair | | 2026-09-01 | 2026-09-03 | 2026-09-10 | Awaiting replacement screen
-        SN88110 | Priya Menon | Scheduled | 2026-09-12 | | 2026-09-06 | | Please bring your charger too
-        SN99000 | Meera Nair | Received | | 2026-09-05 | 2026-09-05 | | 
-
-      "Status" must be one of exactly these values (case-sensitive):
-        Scheduled, Received, Diagnosis, Parts Ordered, In Repair, Ready for Pickup, Completed, On Hold
-
-      ScheduledDate, HandoverDate, EstimatedCompletion and Notes can be left blank per row.
-      Use ScheduledDate for the date you've booked a customer in for (from the "Book a
-      Service" form) before their laptop has arrived. Once it's dropped off, switch
-      Status to "Received" and fill in HandoverDate instead.
-
-   2. File > Share > Publish to web > choose the sheet tab > format = CSV > Publish.
-      Copy that link into SHEET_CSV_URL below.
-
-   3. To update a customer, just edit their row in the Sheet  no redeploy needed.
-
-   TAB 2  Book a Service  is a Google Form embedded in an iframe, so
-   submissions land in their own separate Google Sheet automatically.
+   TAB 1  WARRANTY STATUS  (its own sheet, its own progress bar)
    -------------------------------------------------------------------------
-   1. Go to forms.google.com > Blank form. Title it "Service Reservation".
-   2. Add these questions (all as "Short answer" unless noted):
-        Full Name
-        Phone Number
-        Laptop Model
-        Serial Number
-        Purchase Date          (set question type to "Date")
-        Purchase Invoice Number
-        Issue Description      (set to "Paragraph")
-   3. Click the green Responses tab at the top of the form editor, then the
-      green Sheets icon to create a linked spreadsheet  every submission
-      will appear there as a new row automatically.
-   4. Click Send (top right) > the "< >" embed icon > copy the given
-      <iframe> address (just the src link inside quotes).
-   5. Paste that link below in place of PASTE_YOUR_GOOGLE_FORM_EMBED_LINK_HERE,
-      and also directly into the iframe src= near "Book a service" above.
+   Column headers (row 1):
+     SerialNumber | CustomerName | Status | HandoverDate | LastUpdated | EstimatedCompletion | Notes
+
+   Status must be one of:
+     Received, Diagnosis, Parts Ordered, In Repair, Ready for Pickup, Completed, On Hold
+
+   Publish this sheet to web as CSV (File > Share > Publish to web > CSV),
+   then paste the link into WARRANTY_SHEET_CSV_URL below.
+
+   -------------------------------------------------------------------------
+   TAB 2  SERVICE STATUS  (a DIFFERENT sheet, a DIFFERENT progress bar)
+   -------------------------------------------------------------------------
+   Column headers (row 1):
+     SerialNumber | CustomerName | Status | ScheduledDate | ServiceEndDate | LastUpdated | Notes
+
+   Status should be one of:
+     Processing, Scheduled, Service in Progress, Complete, On Hold
+   You do NOT have to set Status yourself for the "Scheduled" stage  if you
+   leave Status blank but fill in ScheduledDate, it automatically shows as
+   "Scheduled". This is the field you fill in after reviewing a customer's
+   booking from Tab 3 and deciding their appointment date.
+
+   Publish this sheet to web as CSV too, then paste its link into
+   SERVICE_SHEET_CSV_URL below. It is a SEPARATE published link from the
+   warranty sheet  don't reuse the same one for both.
+
+   -------------------------------------------------------------------------
+   TAB 3  BOOK A SERVICE  (Google Form, already embedded)
+   -------------------------------------------------------------------------
+   Submissions land in their own Form-linked spreadsheet automatically.
+   That sheet is just a raw inbox of requests  after reviewing one, you
+   manually add/update that customer's row in the TAB 2 sheet above with
+   their Serial Number and a ScheduledDate.
    ========================================================================= */
 
-const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRcElB9lq25oarwBjdoh4_x8OnKvUZZKibCspAKZgZnKSdEwf37C9n8s4xU4E0NM750wsKTUPM0UrkH/pub?gid=0&single=true&output=csv";
+const WARRANTY_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRcElB9lq25oarwBjdoh4_x8OnKvUZZKibCspAKZgZnKSdEwf37C9n8s4xU4E0NM750wsKTUPM0UrkH/pub?gid=0&single=true&output=csv";
+const SERVICE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRcElB9lq25oarwBjdoh4_x8OnKvUZZKibCspAKZgZnKSdEwf37C9n8s4xU4E0NM750wsKTUPM0UrkH/pub?gid=526123895&single=true&output=csv";
 
-// Fallback demo data so the page works before you connect a real sheet.
-const DEMO_DATA = [
-  {SerialNumber:"SN12345", CustomerName:"Aditi Rao", Status:"In Repair", ScheduledDate:"", HandoverDate:"2026-09-01", LastUpdated:"2026-09-03", EstimatedCompletion:"2026-09-10", Notes:"Awaiting replacement screen from vendor"},
-  {SerialNumber:"TCK-0042", CustomerName:"Vikram Shah", Status:"Ready for Pickup", ScheduledDate:"", HandoverDate:"2026-08-28", LastUpdated:"2026-09-04", EstimatedCompletion:"", Notes:"Please bring your original receipt"},
-  {SerialNumber:"SN99000", CustomerName:"Meera Nair", Status:"Received", ScheduledDate:"", HandoverDate:"2026-09-05", LastUpdated:"2026-09-05", EstimatedCompletion:"", Notes:""},
-  {SerialNumber:"SN77002", CustomerName:"Rohan Das", Status:"On Hold", ScheduledDate:"", HandoverDate:"2026-09-02", LastUpdated:"2026-09-04", EstimatedCompletion:"", Notes:"Warranty claim needs proof of purchase \u2014 please email a copy of your invoice"},
-  {SerialNumber:"SN88110", CustomerName:"Priya Menon", Status:"Scheduled", ScheduledDate:"2026-09-12", HandoverDate:"", LastUpdated:"2026-09-06", EstimatedCompletion:"", Notes:"Please bring your charger too"}
+// Fallback demo data  shown until you connect real sheet links above.
+const WARRANTY_DEMO_DATA = [
+  {SerialNumber:"SN12345", CustomerName:"Aditi Rao", Status:"In Repair", HandoverDate:"2026-09-01", LastUpdated:"2026-09-03", EstimatedCompletion:"2026-09-10", Notes:"Awaiting replacement screen from vendor"},
+  {SerialNumber:"SN99000", CustomerName:"Meera Nair", Status:"Received", HandoverDate:"2026-09-05", LastUpdated:"2026-09-05", EstimatedCompletion:"", Notes:""},
+  {SerialNumber:"SN77002", CustomerName:"Rohan Das", Status:"On Hold", HandoverDate:"2026-09-02", LastUpdated:"2026-09-04", EstimatedCompletion:"", Notes:"Warranty claim needs proof of purchase  please email a copy of your invoice"}
 ];
 
-const STAGES = ["Scheduled","Received","Diagnosis","Parts Ordered","In Repair","Ready for Pickup","Completed"];
+const SERVICE_DEMO_DATA = [
+  {SerialNumber:"SN88110", CustomerName:"Priya Menon", Status:"", ScheduledDate:"2026-09-12", ServiceEndDate:"", LastUpdated:"2026-09-06", Notes:"Please bring your charger too"},
+  {SerialNumber:"SN12345", CustomerName:"Aditi Rao", Status:"Service in Progress", ScheduledDate:"2026-09-01", ServiceEndDate:"", LastUpdated:"2026-09-03", Notes:""},
+  {SerialNumber:"SN70021", CustomerName:"Kabir Singh", Status:"Complete", ScheduledDate:"2026-08-20", ServiceEndDate:"2026-08-27", LastUpdated:"2026-08-27", Notes:""}
+];
+
+const WARRANTY_STAGES = ["Received","Diagnosis","Parts Ordered","In Repair","Ready for Pickup","Completed"];
+const SERVICE_STAGES  = ["Processing","Scheduled","Service in Progress","Complete"];
 
 function parseCSV(text){
   const lines = text.trim().split(/\r?\n/);
@@ -376,55 +372,53 @@ function parseCSV(text){
   });
 }
 
-async function fetchData(){
-  if (!SHEET_CSV_URL || SHEET_CSV_URL.startsWith("PASTE_")){
-    return DEMO_DATA;
+async function fetchSheet(url, demoData){
+  if (!url || url.startsWith("PASTE_")){
+    return demoData;
   }
-  const res = await fetch(SHEET_CSV_URL);
+  const res = await fetch(url);
   if (!res.ok) throw new Error("Could not reach the data source.");
   const text = await res.text();
   return parseCSV(text);
 }
 
-function renderProgress(status){
-  const bar = document.getElementById("progressBar");
-  const labels = document.getElementById("progressLabels");
-  bar.innerHTML = "";
-  labels.innerHTML = "";
+function renderBar(barEl, labelsEl, stages, currentIndex, onHold){
+  barEl.innerHTML = "";
+  labelsEl.innerHTML = "";
 
-  if (status === "On Hold"){
+  if (onHold){
     const seg = document.createElement("div");
     seg.className = "seg";
     seg.style.background = "var(--warn)";
-    bar.appendChild(seg);
+    barEl.appendChild(seg);
     const lab = document.createElement("span");
     lab.className = "current";
     lab.textContent = "On hold  see note above";
     lab.style.flex = "1";
-    labels.appendChild(lab);
+    labelsEl.appendChild(lab);
     return;
   }
 
-  const currentIndex = STAGES.indexOf(status);
-  STAGES.forEach((stage, i) => {
+  stages.forEach((stage, i) => {
     const seg = document.createElement("div");
     seg.className = "seg" + (i <= currentIndex ? " filled" : "");
-    bar.appendChild(seg);
+    barEl.appendChild(seg);
 
     const lab = document.createElement("span");
     lab.textContent = stage;
     if (i < currentIndex) lab.className = "done";
     else if (i === currentIndex) lab.className = "current";
-    labels.appendChild(lab);
+    labelsEl.appendChild(lab);
   });
 }
 
-async function checkStatus(){
-  const idInput = document.getElementById("lookup").value.trim().toLowerCase();
-  const errorBox = document.getElementById("error");
-  const loading = document.getElementById("loading");
-  const result = document.getElementById("result");
-  const btn = document.getElementById("checkBtn");
+/* ---------------------------- WARRANTY TAB ---------------------------- */
+async function checkWarranty(){
+  const idInput = document.getElementById("warrantyLookup").value.trim().toLowerCase();
+  const errorBox = document.getElementById("warrantyError");
+  const loading = document.getElementById("warrantyLoading");
+  const result = document.getElementById("warrantyResult");
+  const btn = document.getElementById("warrantyCheckBtn");
 
   errorBox.style.display = "none";
   result.classList.remove("visible");
@@ -439,51 +433,46 @@ async function checkStatus(){
   loading.style.display = "block";
 
   try{
-    const data = await fetchData();
+    const data = await fetchSheet(WARRANTY_SHEET_CSV_URL, WARRANTY_DEMO_DATA);
     const match = data.find(row => (row.SerialNumber || "").toLowerCase() === idInput);
 
     if (!match){
-      errorBox.textContent = "We couldn't find a record with that serial number. Double-check it against your receipt.";
+      errorBox.textContent = "We couldn't find a warranty record with that serial number.";
       errorBox.style.display = "block";
       return;
     }
 
-    document.getElementById("customerName").textContent = match.CustomerName || "\u2014";
-    document.getElementById("lastUpdated").textContent = match.LastUpdated || "\u2014";
-    document.getElementById("handoverDate").textContent = match.HandoverDate || "\u2014";
+    document.getElementById("warrantyCustomerName").textContent = match.CustomerName || "\u2014";
+    document.getElementById("warrantyLastUpdated").textContent = match.LastUpdated || "\u2014";
+    document.getElementById("warrantyHandoverDate").textContent = match.HandoverDate || "\u2014";
 
-    const scheduledRow = document.getElementById("scheduledRow");
-    if (match.ScheduledDate && match.ScheduledDate.trim()){
-      document.getElementById("scheduledDate").textContent = match.ScheduledDate;
-      scheduledRow.style.display = "block";
-    } else {
-      scheduledRow.style.display = "none";
-    }
-
-    const pill = document.getElementById("statusPill");
+    const pill = document.getElementById("warrantyStatusPill");
+    const onHold = (match.Status || "").trim() === "On Hold";
     pill.textContent = match.Status || "Unknown";
-    pill.className = "status-pill" + (match.Status === "On Hold" ? " warn" : "");
+    pill.className = "status-pill" + (onHold ? " warn" : "");
 
-    const etaRow = document.getElementById("etaRow");
+    const etaRow = document.getElementById("warrantyEtaRow");
     if (match.EstimatedCompletion && match.EstimatedCompletion.trim()){
-      document.getElementById("etaValue").textContent = match.EstimatedCompletion;
+      document.getElementById("warrantyEtaValue").textContent = match.EstimatedCompletion;
       etaRow.style.visibility = "visible";
     } else {
       etaRow.style.visibility = "hidden";
     }
 
-    const noteCard = document.getElementById("noteCard");
+    const noteCard = document.getElementById("warrantyNoteCard");
     if (match.Notes && match.Notes.trim()){
-      document.getElementById("noteValue").textContent = match.Notes;
+      document.getElementById("warrantyNoteValue").textContent = match.Notes;
       noteCard.style.display = "block";
     } else {
       noteCard.style.display = "none";
     }
 
-    renderProgress(match.Status);
+    const idx = WARRANTY_STAGES.indexOf((match.Status || "").trim());
+    renderBar(document.getElementById("warrantyProgressBar"), document.getElementById("warrantyProgressLabels"), WARRANTY_STAGES, idx, onHold);
+
     result.classList.add("visible");
   } catch(err){
-    errorBox.textContent = "Something went wrong reaching the status data. Please try again shortly.";
+    errorBox.textContent = "Something went wrong reaching the warranty data. Please try again shortly.";
     errorBox.style.display = "block";
   } finally {
     btn.disabled = false;
@@ -491,26 +480,97 @@ async function checkStatus(){
   }
 }
 
-document.getElementById("checkBtn").addEventListener("click", checkStatus);
-document.getElementById("lookup").addEventListener("keydown", e => { if (e.key === "Enter") checkStatus(); });
+/* ---------------------------- SERVICE TAB ---------------------------- */
+function computeServiceStageIndex(match){
+  const status = (match.Status || "").trim();
+  const idx = SERVICE_STAGES.indexOf(status);
+  if (idx !== -1) return idx;
+  if (match.ScheduledDate && match.ScheduledDate.trim()) return 1; // Scheduled
+  return 0; // Processing
+}
 
-// Tab switching
-const tabBtnStatus = document.getElementById("tabBtnStatus");
-const tabBtnReserve = document.getElementById("tabBtnReserve");
-const tabStatus = document.getElementById("tabStatus");
-const tabReserve = document.getElementById("tabReserve");
+async function checkService(){
+  const idInput = document.getElementById("serviceLookup").value.trim().toLowerCase();
+  const errorBox = document.getElementById("serviceError");
+  const loading = document.getElementById("serviceLoading");
+  const result = document.getElementById("serviceResult");
+  const btn = document.getElementById("serviceCheckBtn");
 
-tabBtnStatus.addEventListener("click", () => {
-  tabBtnStatus.classList.add("active");
-  tabBtnReserve.classList.remove("active");
-  tabStatus.classList.add("active");
-  tabReserve.classList.remove("active");
-});
-tabBtnReserve.addEventListener("click", () => {
-  tabBtnReserve.classList.add("active");
-  tabBtnStatus.classList.remove("active");
-  tabReserve.classList.add("active");
-  tabStatus.classList.remove("active");
+  errorBox.style.display = "none";
+  result.classList.remove("visible");
+
+  if (!idInput){
+    errorBox.textContent = "Enter a serial number first.";
+    errorBox.style.display = "block";
+    return;
+  }
+
+  btn.disabled = true;
+  loading.style.display = "block";
+
+  try{
+    const data = await fetchSheet(SERVICE_SHEET_CSV_URL, SERVICE_DEMO_DATA);
+    const match = data.find(row => (row.SerialNumber || "").toLowerCase() === idInput);
+
+    if (!match){
+      errorBox.textContent = "We couldn't find a service booking with that serial number. Have you booked yet? Try the \"Book a Service\" tab.";
+      errorBox.style.display = "block";
+      return;
+    }
+
+    document.getElementById("serviceCustomerName").textContent = match.CustomerName || "\u2014";
+    document.getElementById("serviceLastUpdated").textContent = match.LastUpdated || "\u2014";
+    document.getElementById("serviceScheduledDate").textContent = match.ScheduledDate || "\u2014";
+
+    const pill = document.getElementById("serviceStatusPill");
+    const onHold = (match.Status || "").trim() === "On Hold";
+    pill.textContent = (match.Status && match.Status.trim()) || SERVICE_STAGES[computeServiceStageIndex(match)];
+    pill.className = "status-pill" + (onHold ? " warn" : "");
+
+    const endRow = document.getElementById("serviceEndRow");
+    if (match.ServiceEndDate && match.ServiceEndDate.trim()){
+      document.getElementById("serviceEndDate").textContent = match.ServiceEndDate;
+      endRow.style.visibility = "visible";
+    } else {
+      endRow.style.visibility = "hidden";
+    }
+
+    const noteCard = document.getElementById("serviceNoteCard");
+    if (match.Notes && match.Notes.trim()){
+      document.getElementById("serviceNoteValue").textContent = match.Notes;
+      noteCard.style.display = "block";
+    } else {
+      noteCard.style.display = "none";
+    }
+
+    const idx = computeServiceStageIndex(match);
+    renderBar(document.getElementById("serviceProgressBar"), document.getElementById("serviceProgressLabels"), SERVICE_STAGES, idx, onHold);
+
+    result.classList.add("visible");
+  } catch(err){
+    errorBox.textContent = "Something went wrong reaching the service data. Please try again shortly.";
+    errorBox.style.display = "block";
+  } finally {
+    btn.disabled = false;
+    loading.style.display = "none";
+  }
+}
+
+document.getElementById("warrantyCheckBtn").addEventListener("click", checkWarranty);
+document.getElementById("warrantyLookup").addEventListener("keydown", e => { if (e.key === "Enter") checkWarranty(); });
+document.getElementById("serviceCheckBtn").addEventListener("click", checkService);
+document.getElementById("serviceLookup").addEventListener("keydown", e => { if (e.key === "Enter") checkService(); });
+
+/* ---------------------------- TAB SWITCHING ---------------------------- */
+const tabBtns = document.querySelectorAll(".tab-btn");
+const tabPanels = document.querySelectorAll(".tab-panel");
+tabBtns.forEach(btn => {
+  btn.addEventListener("click", () => {
+    tabBtns.forEach(b => b.classList.remove("active"));
+    tabPanels.forEach(p => p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.tab).classList.add("active");
+  });
 });
 </script>
 </body>
